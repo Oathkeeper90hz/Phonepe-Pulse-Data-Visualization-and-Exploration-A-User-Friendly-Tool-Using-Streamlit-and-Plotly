@@ -1,0 +1,42 @@
+import os
+import json
+import pandas as pd
+
+path = "C:\\Users\\rajus\\Desktop\\PhonePay\\pulse\\data\\map\\transaction\\hover\\country\\india\\state\\"
+
+map_transac_list = os.listdir(path)
+
+column1 = {'State': [], 'Year': [], 'Quarter': [], 'District': [], 'Count': [],
+           'Amount': []}
+
+for state in map_transac_list:
+    cur_state = path + state + "/"
+    map_year_list = os.listdir(cur_state)
+
+    for year in map_year_list:
+        cur_year = cur_state + year + "/"
+        map_file_list = os.listdir(cur_year)
+
+        for file in map_file_list:
+            cur_file = cur_year + file
+            data = open(cur_file, 'r')
+            C = json.load(data)
+
+            for i in C["data"]["hoverDataList"]:
+                district = i["name"]
+                count = i["metric"][0]["count"]
+                amount = i["metric"][0]["amount"]
+                column1["District"].append(district)
+                column1["Count"].append(count)
+                column1["Amount"].append(amount)
+                column1['State'].append(state)
+                column1['Year'].append(year)
+                column1['Quarter'].append(int(file.strip('.json')))
+
+df_map_transac = pd.DataFrame(column1)
+
+# Define the output file location
+outputfile = "C:\\Users\\rajus\\Desktop\\PhonePay\\pulse\\map_transac.csv"
+
+# Save the DataFrame to a CSV file
+df_map_transac.to_csv(outputfile, index=False)

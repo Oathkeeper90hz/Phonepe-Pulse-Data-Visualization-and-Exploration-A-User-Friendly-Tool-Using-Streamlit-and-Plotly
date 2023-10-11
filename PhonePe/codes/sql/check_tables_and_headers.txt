@@ -1,0 +1,40 @@
+import mysql.connector
+import pandas as pd
+
+# Database connection details
+host = "localhost"
+user = "root"
+password = "#######"#your password
+database = "#######"#your database 
+
+# Establish a database connection
+mydb = mysql.connector.connect(
+    host=host,
+    user=user,
+    password=password,
+    database=database
+)
+
+# Create a cursor
+mycursor = mydb.cursor()
+
+# Execute SQL to show tables
+mycursor.execute("SHOW TABLES")
+
+# Fetch the list of tables
+tables = mycursor.fetchall()
+
+# Print table names and their column headers
+for table in tables:
+    table_name = table[0]
+    print(f"Table: {table_name}")
+
+    # Execute SQL to describe the table and retrieve column headers
+    mycursor.execute(f"DESCRIBE {table_name}")
+
+    # Fetch the list of columns
+    columns = mycursor.fetchall()
+
+    # Extract and print column names
+    column_names = [column[0] for column in columns]
+    print(f"Columns: {', '.join(column_names)}\n")

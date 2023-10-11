@@ -1,0 +1,35 @@
+import mysql.connector
+import pandas as pd
+
+# Database connection details
+host = "localhost"
+user = "root"
+password = "#######"#your password
+database = "#######"#your database 
+# Establish a database connection
+mydb = mysql.connector.connect(
+    host=host,
+    user=user,
+    password=password,
+    database=database
+)
+
+# Create a cursor
+mycursor = mydb.cursor()
+
+# Read the CSV file into a DataFrame
+df_top_transac = pd.read_csv(#######)#your csv path 
+
+# Execute SQL to create the 'top_transac' table if it doesn't exist
+mycursor.execute("CREATE TABLE IF NOT EXISTS top_transac (State VARCHAR(100), Year INT, Quarter INT, Pincode INT, Transaction_count INT, Transaction_amount DOUBLE)")
+
+# Insert data into the 'top_transac' table
+for i, row in df_top_transac.iterrows():
+    sql = "INSERT INTO top_transac (State, Year, Quarter, Pincode, Transaction_count, Transaction_amount) VALUES (%s, %s, %s, %s, %s, %s)"
+    mycursor.execute(sql, tuple(row))
+    mydb.commit()
+
+# Close the cursor and the database connection
+mycursor.close()
+mydb.close()
+

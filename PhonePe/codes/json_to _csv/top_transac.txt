@@ -1,0 +1,44 @@
+import os
+import json
+import pandas as pd
+
+# Replace path5 with the new path
+path = "C:/Users/rajus/Desktop/PhonePay/pulse/data/top/transaction/country/india/state/"
+
+top_transac_list = os.listdir(path)
+
+# Replace columns5 with the new columns1
+columns1 = {'State': [], 'Year': [], 'Quarter': [], 'Pincode': [], 'Transaction_count': [],
+            'Transaction_amount': []}
+
+for state in top_transac_list:
+    cur_state = path + state + "/"
+    top_year_list = os.listdir(cur_state)
+
+    for year in top_year_list:
+        cur_year = cur_state + year + "/"
+        top_file_list = os.listdir(cur_year)
+
+        for file in top_file_list:
+            cur_file = cur_year + file
+            data = open(cur_file, 'r')
+            E = json.load(data)
+
+            for i in E['data']['pincodes']:
+                name = i['entityName']
+                count = i['metric']['count']
+                amount = i['metric']['amount']
+                columns1['Pincode'].append(name)
+                columns1['Transaction_count'].append(count)
+                columns1['Transaction_amount'].append(amount)
+                columns1['State'].append(state)
+                columns1['Year'].append(year)
+                columns1['Quarter'].append(int(file.strip('.json')))
+
+df_top_transac = pd.DataFrame(columns1)
+
+# Specify the output file path
+output_file = "C:/Users/rajus/Desktop/PhonePay/pulse/top_transac.csv"
+
+# Save the DataFrame to a CSV file
+df_top_transac.to_csv(output_file, index=False)

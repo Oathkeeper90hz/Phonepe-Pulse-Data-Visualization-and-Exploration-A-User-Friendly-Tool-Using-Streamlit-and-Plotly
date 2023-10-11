@@ -1,0 +1,35 @@
+import mysql.connector
+import pandas as pd
+
+# Database connection details
+host = "localhost"
+user = "root"
+password = "#######"#your password
+database = "#######"#your database 
+
+# Establish a database connection
+mydb = mysql.connector.connect(
+    host=host,
+    user=user,
+    password=password,
+    database=database
+)
+
+# Create a cursor
+mycursor = mydb.cursor()
+
+# Read the CSV file into a DataFrame
+df_agg_user = pd.read_csv(#######)#your csv path 
+
+# Execute SQL to create the 'agg_user' table if it doesn't exist
+mycursor.execute("CREATE TABLE IF NOT EXISTS agg_user (State VARCHAR(100), Year INT, Quarter INT, Brands VARCHAR(100), Count INT, Percentage DOUBLE)")
+
+# Insert data into the 'agg_user' table
+for i, row in df_agg_user.iterrows():
+    sql = "INSERT INTO agg_user (State, Year, Quarter, Brands, Count, Percentage) VALUES (%s, %s, %s, %s, %s, %s)"
+    mycursor.execute(sql, tuple(row))
+    mydb.commit()
+
+# Close the cursor and the database connection
+mycursor.close()
+mydb.close()

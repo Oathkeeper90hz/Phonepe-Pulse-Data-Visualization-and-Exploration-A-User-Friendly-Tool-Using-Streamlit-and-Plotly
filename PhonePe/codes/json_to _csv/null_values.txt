@@ -1,0 +1,27 @@
+import os
+import pandas as pd
+
+# Specify the directory where your CSV files are located
+directory = 'C:\\Users\\rajus\\Desktop\\PhonePay\\csv'
+
+# Loop through each CSV file in the directory
+for filename in os.listdir(directory):
+    if filename.endswith(".csv"):
+        file_path = os.path.join(directory, filename)
+        print(f"Checking CSV file: {filename}")
+
+        # Read the CSV file into a pandas DataFrame
+        df = pd.read_csv(file_path)
+
+        # Check for null values in the DataFrame
+        if df.isnull().values.any():
+            print(f"Null values found in {filename}:")
+            print(df[df.isnull().any(axis=1)])  # Print rows with null values
+
+        # Check for duplicate rows in the DataFrame
+        if df.duplicated().any():
+            print(f"Duplicate values found in {filename}:")
+            print(df[df.duplicated(keep=False)])  # Print duplicate rows
+
+        # Print the shape (number of rows and columns) of the DataFrame
+        print(f"Number of rows and columns in {filename}: {df.shape}\n")

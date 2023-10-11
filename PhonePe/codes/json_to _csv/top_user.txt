@@ -1,0 +1,42 @@
+import os
+import json
+import pandas as pd
+
+# Replace path6 with the new path
+path = "C:/Users/rajus/Desktop/PhonePay/pulse/data/top/user/country/india/state/"
+
+top_user_list = os.listdir(path)
+
+# Replace columns6 with the new columns1
+columns1 = {'State': [], 'Year': [], 'Quarter': [], 'Pincode': [],
+            'RegisteredUsers': []}
+
+for state in top_user_list:
+    cur_state = path + state + "/"
+    top_year_list = os.listdir(cur_state)
+
+    for year in top_year_list:
+        cur_year = cur_state + year + "/"
+        top_file_list = os.listdir(cur_year)
+
+        for file in top_file_list:
+            cur_file = cur_year + file
+            data = open(cur_file, 'r')
+            F = json.load(data)
+
+            for i in F['data']['pincodes']:
+                name = i['name']
+                registeredUsers = i['registeredUsers']
+                columns1['Pincode'].append(name)
+                columns1['RegisteredUsers'].append(registeredUsers)
+                columns1['State'].append(state)
+                columns1['Year'].append(year)
+                columns1['Quarter'].append(int(file.strip('.json')))
+
+df_top_user = pd.DataFrame(columns1)
+
+# Specify the output file path
+output_file = "C:/Users/rajus/Desktop/PhonePay/pulse/top_user.csv"
+
+# Save the DataFrame to a CSV file
+df_top_user.to_csv(output_file, index=False)

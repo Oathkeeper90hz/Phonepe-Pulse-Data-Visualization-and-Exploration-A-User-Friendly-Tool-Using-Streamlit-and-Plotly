@@ -1,0 +1,52 @@
+import os
+import json
+import pandas as pd
+
+# Define the new path and column dictionary
+new_path = r'C:\Users\rajus\Desktop\PhonePay\pulse\data\aggregated\user\country\india\state'
+
+column = {'State': [], 'Year': [], 'Quarter': [], 'Brands': [], 'Count': [],
+          'Percentage': []}
+
+# Use the new path and column dictionary in your code
+agg_user_list = os.listdir(new_path)
+
+for state in agg_user_list:
+    cur_state = os.path.join(new_path, state)
+    agg_year_list = os.listdir(cur_state)
+
+    for year in agg_year_list:
+        cur_year = os.path.join(cur_state, year)
+        agg_file_list = os.listdir(cur_year)
+
+        for file in agg_file_list:
+            cur_file = os.path.join(cur_year, file)
+            data = open(cur_file, 'r')
+            B = json.load(data)
+            try:
+                for i in B["data"]["usersByDevice"]:
+                    brand_name = i["brand"]
+                    counts = i["count"]
+                    percents = i["percentage"]
+                    column["Brands"].append(brand_name)
+                    column["Count"].append(counts)
+                    column["Percentage"].append(percents)
+                    column["State"].append(state)
+                    column["Year"].append(year)
+                    column["Quarter"].append(int(file.strip('.json')))
+            except:
+                pass
+
+df_agg_user = pd.DataFrame(column)
+
+# Specify the output path and filename
+output_path = r'C:\Users\rajus\Desktop\PhonePay\pulse'
+output_filename = 'agg_user.csv'
+
+# Combine the output path and filename
+output_file_path = os.path.join(output_path, output_filename)
+
+# Save the DataFrame to a CSV file
+df_agg_user.to_csv(output_file_path, index=False)
+
+print(f"Saved the output file to: {output_file_path}")

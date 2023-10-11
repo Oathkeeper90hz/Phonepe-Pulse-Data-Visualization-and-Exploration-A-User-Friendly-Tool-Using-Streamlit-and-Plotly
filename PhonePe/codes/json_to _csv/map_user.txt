@@ -1,0 +1,44 @@
+import os
+import json
+import pandas as pd
+
+# Replace path4 with the new path
+path = "C:/Users/rajus/Desktop/PhonePay/pulse/data/map/user/hover/country/india/state/"
+
+map_user_list = os.listdir(path)
+
+# Replace columns4 with the new columns1
+columns1 = {"State": [], "Year": [], "Quarter": [], "District": [],
+            "RegisteredUser": [], "AppOpens": []}
+
+for state in map_user_list:
+    cur_state = path + state + "/"
+    map_year_list = os.listdir(cur_state)
+    
+    for year in map_year_list:
+        cur_year = cur_state + year + "/"
+        map_file_list = os.listdir(cur_year)
+        
+        for file in map_file_list:
+            cur_file = cur_year + file
+            data = open(cur_file, 'r')
+            D = json.load(data)
+            
+            for i in D["data"]["hoverData"].items():
+                district = i[0]
+                registereduser = i[1]["registeredUsers"]
+                appOpens = i[1]['appOpens']
+                columns1["District"].append(district)
+                columns1["RegisteredUser"].append(registereduser)
+                columns1["AppOpens"].append(appOpens)
+                columns1['State'].append(state)
+                columns1['Year'].append(year)
+                columns1['Quarter'].append(int(file.strip('.json')))
+                
+df_map_user = pd.DataFrame(columns1)
+
+# Specify the output file path
+output_file = "C:/Users/rajus/Desktop/PhonePay/pulse/map_user.csv"
+
+# Save the DataFrame to a CSV file
+df_map_user.to_csv(output_file, index=False)
